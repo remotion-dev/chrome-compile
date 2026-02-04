@@ -31,12 +31,12 @@ use_sysroot = false
 use_qt = false
 
 use_on_device_model_service = false
-enable_print_preview = false
+enable_print_preview = true
 enable_lens_desktop = false
 enable_platform_apps = false
 use_dawn = false
 enable_pdf = false
-enable_printing = false
+enable_printing = true
 enable_extensions = false
 enable_compose = false
 enable_glic = false
