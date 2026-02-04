@@ -1,0 +1,47 @@
+import("//build/args/headless.gn")
+dcheck_always_on = false
+is_official_build = true
+symbol_level = 0
+blink_symbol_level = 0
+v8_symbol_level = 0
+enable_keystone_registration_framework = false
+enable_linux_installer = false
+enable_media_remoting = false
+
+enable_swiftshader_vulkan = false
+
+ffmpeg_branding = "Chrome"
+headless_use_embedded_resources = true
+icu_use_data_file = false
+
+is_debug = false
+proprietary_codecs = true
+target_cpu = "arm64"
+target_os = "linux"
+use_cups = false
+use_pulseaudio = false
+v8_target_cpu = "arm64"
+
+chrome_pgo_phase = 0
+enable_background_mode = false
+enable_captive_portal_detection = false
+enable_chrome_notifications = false
+
+use_sysroot = false
+use_qt = false
+
+use_on_device_model_service = false
+enable_print_preview = false
+enable_lens_desktop = false
+enable_platform_apps = false
+use_dawn = false
+enable_pdf = false
+enable_printing = false
+enable_extensions = false
+enable_compose = false
+enable_glic = false
+enable_mdns = false
+enable_service_discovery = false
+enable_click_to_call = false
+enable_bound_session_credentials = false
+enable_device_bound_sessions = false
