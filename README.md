@@ -9,6 +9,7 @@ Build Chromium 144.0.7559.97 `headless_shell` with proprietary codecs (H.264/AAC
 | **Lambda ARM64** | AWS Lambda (AL2023) | ~4 hours | 88 MB | Serverless browser automation |
 | **Linux ARM64** | Debian/Ubuntu ARM64 | ~1h46m | 84 MB | ARM64 servers, Graviton |
 | **Linux x64** | Debian/Ubuntu x86_64 | ~1h12m | 91 MB | Standard Linux servers |
+| **Amazon Linux x64** | Amazon Linux 2023 x86_64 | ~1h15m | ~95 MB | Amazon Linux x64 servers |
 
 ## Directory Structure
 
@@ -36,6 +37,13 @@ chrome-compile/
 │   ├── args.gn                  # GN build flags
 │   ├── Dockerfile               # Ubuntu 22.04 container
 │   ├── build-chromium.sh        # Build script (simplified)
+│   ├── launch-ec2.sh            # Launch EC2 instance
+│   └── setup-ec2.sh             # EC2 setup script
+├── amazon-linux-x64/            # Amazon Linux x64 build
+│   ├── README.md                # Detailed build guide
+│   ├── args.gn                  # GN build flags
+│   ├── Dockerfile               # AL2023 container
+│   ├── build-chromium.sh        # Build script (with system lib bundling)
 │   ├── launch-ec2.sh            # Launch EC2 instance
 │   └── setup-ec2.sh             # EC2 setup script
 └── output/                      # Pre-built binaries
@@ -83,12 +91,12 @@ aws ec2 terminate-instances --instance-ids <instance-id> --region eu-central-1
 
 ### Build Complexity
 
-| Aspect | Lambda ARM64 | Linux ARM64 | Linux x64 |
-|--------|--------------|-------------|-----------|
-| LLVM toolchain | Bootstrap from source | Bootstrap from source | Pre-built (download) |
-| Build phases | 3 (with Docker commits) | 3 (with Docker commits) | 1 (single run) |
-| PIC patches | Required | Required | Not needed |
-| System libs bundled | Yes (for Lambda) | No (apt install) | No (apt install) |
+| Aspect | Lambda ARM64 | Linux ARM64 | Linux x64 | Amazon Linux x64 |
+|--------|--------------|-------------|-----------|------------------|
+| LLVM toolchain | Bootstrap from source | Bootstrap from source | Pre-built (download) | Pre-built (download) |
+| Build phases | 3 (with Docker commits) | 3 (with Docker commits) | 1 (single run) | 1 (single run) |
+| PIC patches | Required | Required | Not needed | Not needed |
+| System libs bundled | Yes (for Lambda) | No (apt install) | No (apt install) | Yes (for Amazon Linux) |
 
 ### EC2 Instance Types
 
@@ -97,6 +105,7 @@ aws ec2 terminate-instances --instance-ids <instance-id> --region eu-central-1
 | Lambda ARM64 | c7g.8xlarge | 32 | 64 GB | Graviton3 (ARM64) |
 | Linux ARM64 | c7g.8xlarge | 32 | 64 GB | Graviton3 (ARM64) |
 | Linux x64 | c6i.8xlarge | 32 | 64 GB | Intel (x86_64) |
+| Amazon Linux x64 | c6i.8xlarge | 32 | 64 GB | Intel (x86_64) |
 
 ### Output Contents
 
@@ -117,6 +126,18 @@ chrome-headless-shell-linux64/
 ├── libvk_swiftshader.so
 ├── libvulkan.so.1
 └── vk_swiftshader_icd.json
+```
+
+**Amazon Linux x64** (includes system libs for Amazon Linux deployment):
+```
+chromium-headless-shell-amazon-linux2023-x64/
+├── headless_shell
+├── libEGL.so, libGLESv2.so, libvk_swiftshader.so, libvulkan.so.1
+├── vk_swiftshader_icd.json
+├── libnss3.so, libnssutil3.so, libnspr4.so, libsoftokn3.so
+├── libexpat.so.1, libplc4.so, libplds4.so
+├── libfreebl3.so, libfreeblpriv3.so
+├── libdbus-1.so.3, libgcc_s*.so.1, libsystemd.so.0
 ```
 
 ## Runtime Dependencies
@@ -192,6 +213,7 @@ Common issues:
 | Lambda ARM64 | ~$1.09/hr | ~4 hours | ~$4.50 |
 | Linux ARM64 | ~$1.09/hr | ~1h46m | ~$2.00 |
 | Linux x64 | ~$1.36/hr | ~1h12m | ~$1.70 |
+| Amazon Linux x64 | ~$1.36/hr | ~1h15m | ~$1.75 |
 
 Use spot instances for ~70% savings if build interruption is acceptable.
 
